@@ -1,0 +1,58 @@
+name: Continuous Integration & Automated Testing
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    name: Build, Lint & Automated Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: hr_user
+          POSTGRES_PASSWORD: hr_password
+          POSTGRES_DB: hr_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install Project Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run Ruff Code Quality Linting
+        run: |
+          ruff check app tests
+
+      - name: Run Alembic Database Migrations
+        env:
+          DATABASE_URL: "postgresql://hr_user:hr_password@localhost:5432/hr_test_db"
+        run: |
+          alembic upgrade head
+
+      - name: Execute Pytest Suite with Coverage
+        env:
+          DATABASE_URL: "sqlite:///:memory:"
+        run: |
+          pytest --cov=app --cov-report=term-missing --cov-report=xml
