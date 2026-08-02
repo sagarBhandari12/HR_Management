@@ -197,19 +197,36 @@ The API container will automatically wait for PostgreSQL healthiness, run Alembi
 
 ## Verification & Testing Commands
 
-### Run Full Pytest Suite
+### 1. Virtual Environment Activation (Required once per terminal session)
 ```bash
+source .venv/bin/activate
+```
+
+### 2. Run Full Pytest Suite
+```bash
+# With activated virtual environment:
 pytest -v
+
+# Or directly via virtual environment path:
+.venv/bin/pytest -v
 ```
 
-### Execute Test Coverage Report
+### 3. Execute Test Coverage Report
 ```bash
+# With activated virtual environment:
 pytest --cov=app --cov-report=term-missing
+
+# Or directly via virtual environment path:
+.venv/bin/pytest --cov=app --cov-report=term-missing
 ```
 
-### Run Ruff Code Quality Linting
+### 4. Run Ruff Code Quality Linting
 ```bash
+# With activated virtual environment:
 ruff check app tests
+
+# Or directly via virtual environment path:
+.venv/bin/ruff check app tests
 ```
 
 ---
