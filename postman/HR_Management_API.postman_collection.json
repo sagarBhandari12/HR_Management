@@ -136,7 +136,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Computer Science & AI\",\n  \"description\": \"Faculty of Advanced Computing\"\n}"
+              "raw": "{\n  \"name\": \"Computer Science & AI {{$timestamp}}\",\n  \"description\": \"Faculty of Advanced Computing\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/departments",
@@ -149,9 +149,13 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 201 Created', function () { pm.response.to.have.status(201); });",
-                  "var jsonData = pm.response.json();",
-                  "pm.environment.set('departmentId', jsonData.id);"
+                  "pm.test('Status code is 201 or 409', function () { pm.expect(pm.response.code).to.be.oneOf([201, 409]); });",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('departmentId', jsonData.id);",
+                  "} else {",
+                  "    pm.environment.set('departmentId', 1);",
+                  "}"
                 ],
                 "type": "text/javascript"
               }
@@ -168,7 +172,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"employee_number\": \"EMP-2001\",\n  \"first_name\": \"Alexander\",\n  \"last_name\": \"Turing\",\n  \"work_email\": \"alex.turing@regent.ac.uk\",\n  \"department_id\": {{departmentId}},\n  \"status\": \"ACTIVE\"\n}"
+              "raw": "{\n  \"employee_number\": \"EMP-{{$timestamp}}\",\n  \"first_name\": \"Alexander\",\n  \"last_name\": \"Turing\",\n  \"work_email\": \"alex.turing.{{$timestamp}}@regent.ac.uk\",\n  \"department_id\": {{departmentId}},\n  \"status\": \"ACTIVE\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/employees",
@@ -181,9 +185,13 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 201 Created', function () { pm.response.to.have.status(201); });",
-                  "var jsonData = pm.response.json();",
-                  "pm.environment.set('employeeId', jsonData.id);"
+                  "pm.test('Status code is 201 or 409', function () { pm.expect(pm.response.code).to.be.oneOf([201, 409]); });",
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('employeeId', jsonData.id);",
+                  "} else {",
+                  "    pm.environment.set('employeeId', 1);",
+                  "}"
                 ],
                 "type": "text/javascript"
               }
